@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container" id="login-page">
+        <h2>เข้าสู่ระบบ 🔒</h2>
+        <div class="input-group">
+            <input type="text" id="username" placeholder="ชื่อผู้ใช้">
+        </div>
+        <div class="input-group">
+            <input type="password" id="password" placeholder="รหัสผ่าน">
+        </div>
+        <button onclick="checkLogin()" style="width: 100%;">Login</button>
+    </div>
+    <div class="container" id="todo-page" style="display: none;">
+        <button onclick="logout()" class="btn-logout" title="ออกจากระบบ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+        </button>
+        <h2>รายการสิ่งที่ต้องทำ 📝</h>
+        <div class="input-group">
+            <input type="text" id="input-box" placeholder="พิมพ์สิ่งที่ต้องทำ...">
+            <button onclick="addTask()">เพิ่ม</button>
+        </div>
+        <ul id="list-container">
+            </ul>
+    </div>
+    <script src="user.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

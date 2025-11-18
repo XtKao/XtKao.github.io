@@ -1,0 +1,239 @@
+/* =========================================
+   1. การตั้งค่าพื้นฐาน & ฟอนต์
+   ========================================= */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* สีม่วง-คราม ทันสมัย */
+    --bg-color: #f3f4f6; /* สีพื้นหลังเทาอ่อนสบายตา */
+    --card-bg: #ffffff;
+    --text-main: #1f2937;
+    --text-muted: #9ca3af;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Prompt', sans-serif; /* ใช้ฟอนต์ Prompt ทั้งเว็บ */
+}
+
+body {
+    background: var(--bg-color);
+    /* เพิ่มลูกเล่นพื้นหลังจางๆ */
+    background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+    background-size: 20px 20px;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: var(--text-main);
+}
+
+/* =========================================
+   2. กล่อง Container (Card UI)
+   ========================================= */
+.container {
+    background: var(--card-bg);
+    width: 100%;
+    max-width: 420px; /* กว้างขึ้นนิดหน่อยให้ดูโปร่ง */
+    padding: 40px;
+    border-radius: 24px; /* มุมโค้งมนสมัยใหม่ */
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+}
+
+/* ชื่อหัวข้อ */
+h2 {
+    color: #111827;
+    margin-bottom: 60px;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    font-size: 1.8rem;
+}
+
+/* =========================================
+   3. Input & Button (Modern Inputs)
+   ========================================= */
+.input-group {
+    display: flex;
+    gap: 10px; /* เว้นระยะห่างระหว่างช่องพิมพ์กับปุ่ม */
+    margin-bottom: 25px;
+}
+
+/* ช่องกรอกข้อความ */
+input {
+    flex: 1;
+    padding: 14px 18px;
+    border: 2px solid #e5e7eb;
+    border-radius: 14px;
+    background: #f9fafb;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    color: #374151;
+}
+
+input:focus {
+    border-color: #667eea; /* เปลี่ยนสีขอบเมื่อคลิก */
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+input::placeholder {
+    color: #9ca3af;
+}
+
+/* ปุ่มกด */
+button {
+    padding: 14px 24px;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+button:hover {
+    transform: translateY(-2px); /* ลอยขึ้นเล็กน้อย */
+    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+    filter: brightness(1.1);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* =========================================
+   4. รายการ To-Do List
+   ========================================= */
+ul {
+    list-style: none;
+}
+
+ul li {
+    font-size: 16px;
+    padding: 16px 20px;
+    background: #fff;
+    border: 1px solid #f3f4f6;
+    margin-bottom: 12px;
+    border-radius: 16px; /* มุมโค้งมน */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+ul li:hover {
+    transform: translateX(5px); /* ขยับขวาเล็กน้อยเมื่อเอาเมาส์ชี้ */
+    border-color: #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* วงกลมหน้าข้อความ (เหมือน Checkbox) */
+ul li::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 50%;
+    margin-right: 15px;
+    transition: all 0.2s;
+}
+
+/* สไตล์เมื่อทำงานเสร็จแล้ว (Checked) */
+ul li.checked {
+    color: var(--text-muted);
+    text-decoration: line-through;
+    background: #f9fafb;
+    border-color: transparent;
+}
+
+ul li.checked::before {
+    background: #10b981; /* สีเขียว */
+    border-color: #10b981;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="12" viewBox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* ปุ่มลบ (กากบาท) */
+span.close {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #ef4444;
+    opacity: 0; /* ซ่อนก่อน */
+    transition: all 0.2s;
+}
+
+ul li:hover span.close {
+    opacity: 1; /* โชว์เมื่อเอาเมาส์ชี้ */
+    background: #fee2e2;
+}
+
+span.close:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* =========================================
+   5. หน้า Login เฉพาะส่วน
+   ========================================= */
+#login-page .input-group {
+    flex-direction: column; /* เรียงแนวตั้ง */
+    gap: 15px;
+}
+
+#login-page button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* 1. ต้องสั่งให้กล่องหลักเป็นจุดอ้างอิง */
+.container {
+    position: relative; /* สำคัญมาก! ถ้าไม่มีบรรทัดนี้ ปุ่มจะลอยไปนอกจอ */
+}
+
+/* 2. สไตล์ปุ่ม Logout แบบไอคอน Minimal */
+.btn-logout {
+    position: absolute; /* สั่งให้ลอยอิสระ */
+    top: 20px;         /* ห่างจากขอบบน 20px */
+    right: 20px;       /* ห่างจากขอบขวา 20px */
+    
+    width: 40px !important;   /* บังคับขนาดให้เป็นจัตุรัส */
+    height: 40px !important;
+    padding: 0 !important;    /* ไม่เอา padding */
+    margin: 0 !important;
+    
+    background: transparent !important; /* พื้นหลังใส */
+    border: none !important;            /* ไม่มีขอบ */
+    box-shadow: none !important;        /* ไม่มีเงา */
+    color: #9ca3af !important;          /* สีไอคอนเทาๆ (ไม่เด่นแย่งซีน) */
+    border-radius: 50% !important;      /* ทำเป็นวงกลม */
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* เอฟเฟกต์ตอนเอาเมาส์ชี้ */
+.btn-logout:hover {
+    background: #fee2e2 !important; /* พื้นหลังแดงจางๆ */
+    color: #ef4444 !important;      /* ไอคอนเปลี่ยนเป็นสีแดง */
+    transform: scale(1.1) !important; /* ขยายใหญ่นิดนึง */
+}
+
+}
