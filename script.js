@@ -1,144 +1,166 @@
-// ==========================================
-// ส่วนที่ 1: ตัวแปรและการจัดการสถานะ
-// ==========================================
-
-// ตัวแปรเก็บว่าใครกำลังใช้งานอยู่ (เริ่มต้นยังไม่มีใคร = null)
 let currentUser = null; 
 
-// อ้างอิง Element ต่างๆ ในหน้าเว็บมาเก็บไว้ในตัวแปร
 const loginPage = document.getElementById("login-page");
 const todoPage = document.getElementById("todo-page");
-const inputBox = document.getElementById("input-box");
-const listContainer = document.getElementById("list-container");
 const usernameInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");
-
-// ==========================================
-// ส่วนที่ 2: ฟังก์ชันจัดการระบบ Login / Logout
-// ==========================================
+const inputBox = document.getElementById("input-box");
+// [ใหม่] รับค่าจากช่องวันที่
+const dateBox = document.getElementById("date-box");
+const listContainer = document.getElementById("list-container");
+const noteInputBox = document.getElementById("note-input-box");
+const noteListContainer = document.getElementById("note-list-container");
+const feedbackModal = document.getElementById("feedback-modal");
+const feedbackText = document.getElementById("feedback-text");
+const feedbackBtnContainer = document.getElementById('feedback-btn-container');
+const userFeedbackForm = document.getElementById("user-feedback-form");
+const adminFeedbackHistory = document.getElementById("admin-feedback-history");
+const feedbackList = document.getElementById("feedback-list");
 
 function checkLogin() {
     const userIn = usernameInput.value;
     const passIn = passwordInput.value;
-
-    // ตรวจสอบว่า usersDB มีอยู่จริงไหม (เผื่อลืมสร้างไฟล์ users.js)
-    if (typeof usersDB === 'undefined') {
-        alert("ไม่พบฐานข้อมูลผู้ใช้! กรุณาตรวจสอบว่าเชื่อมต่อไฟล์ users.js หรือยัง");
-        return;
-    }
-
-    // ค้นหา user ใน usersDB
+    if (typeof usersDB === 'undefined') { alert("ไม่พบฐานข้อมูลผู้ใช้!"); return; }
     const foundUser = usersDB.find(u => u.username === userIn && u.password === passIn);
-
     if (foundUser) {
-        // 1. จำชื่อคนล็อกอิน
         currentUser = foundUser.username;
-        
-        alert("ยินดีต้อนรับคุณ " + currentUser + " !");
-        
-        // 2. สลับหน้าจอ: ซ่อน Login -> โชว์ To-Do
-        loginPage.style.display = "none";
-        todoPage.style.display = "block";
-        
-        // 3. โหลดข้อมูลของคนคนนี้ขึ้นมา
-        loadData();
-    } else {
-        alert("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!");
-    }
+        alert("ยินดีต้อนรับคุณ " + foundUser.displayName + " !"); 
+        loginPage.style.display = "none"; todoPage.style.display = "flex"; 
+        loadData(); checkForAdminNotifications(); 
+    } else { alert("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!"); }
 }
 
 function logout() {
-    // เคลียร์ค่าคนใช้งานปัจจุบัน
     currentUser = null;
-    
-    // เคลียร์หน้าจอรายการทิ้ง (เพื่อไม่ให้คนต่อไปมาเห็น)
-    listContainer.innerHTML = ""; 
-
-    // สลับหน้ากลับไป Login
-    todoPage.style.display = "none";
-    loginPage.style.display = "block";
-    
-    // เคลียร์ช่องกรอกรหัสผ่านให้ว่างเปล่า
-    usernameInput.value = "";
-    passwordInput.value = "";
+    listContainer.innerHTML = ""; noteListContainer.innerHTML = ""; feedbackBtnContainer.innerHTML = "";
+    todoPage.style.display = "none"; loginPage.style.display = "block";
+    usernameInput.value = ""; passwordInput.value = "";
 }
-
-// ==========================================
-// ส่วนที่ 3: ฟังก์ชันจัดการ To-Do List
-// ==========================================
 
 function addTask() {
     if (inputBox.value === '') {
         alert("กรุณาพิมพ์ข้อความก่อนกดเพิ่ม!");
     } else {
-        // สร้างรายการใหม่ (li)
         let li = document.createElement("li");
-        li.innerHTML = inputBox.value;
+        // ใส่ข้อความ
+        let textNode = document.createTextNode(inputBox.value);
+        li.appendChild(textNode);
+
+        // [ใหม่] ใส่ป้ายวันที่ (ถ้ามีการเลือก)
+        if (dateBox.value) {
+            let dateObj = new Date(dateBox.value);
+            let options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            let formattedDate = dateObj.toLocaleDateString('th-TH', options);
+
+            let dateSpan = document.createElement("span");
+            dateSpan.className = "task-date";
+            dateSpan.innerHTML = `🕒 ${formattedDate}`;
+            li.appendChild(dateSpan);
+        }
+        
         listContainer.appendChild(li);
         
-        // สร้างปุ่มกากบาท (span)
         let span = document.createElement("span");
         span.innerHTML = "\u00d7";
         span.className = "close";
         li.appendChild(span);
     }
-    // เคลียร์ช่องพิมพ์
     inputBox.value = "";
-    
-    // บันทึกข้อมูลทันทีที่เพิ่มเสร็จ
+    dateBox.value = ""; // เคลียร์วันที่
     saveData(); 
 }
 
-// ดักจับเหตุการณ์คลิกที่รายการ (เพื่อติ๊กถูก หรือ ลบ)
 listContainer.addEventListener("click", function(e) {
-    if (e.target.tagName === "LI") {
-        // ถ้าคลิกที่ข้อความ -> สลับสถานะขีดฆ่า
-        e.target.classList.toggle("checked");
-        saveData(); // สถานะเปลี่ยนก็ต้องบันทึก
-    } else if (e.target.tagName === "SPAN") {
-        // ถ้าคลิกที่กากบาท -> ลบทิ้ง
-        e.target.parentElement.remove();
-        saveData(); // ลบแล้วก็ต้องบันทึก
-    }
+    if (e.target.tagName === "LI") { e.target.classList.toggle("checked"); saveData(); } 
+    else if (e.target.tagName === "SPAN" && e.target.classList.contains("close")) { e.target.parentElement.remove(); saveData(); }
 }, false);
 
-// ==========================================
-// ส่วนที่ 4: ระบบบันทึกและโหลดข้อมูล (หัวใจสำคัญ)
-// ==========================================
+function addNote() {
+    if (noteInputBox.value === '') { alert("กรุณาพิมพ์โน้ตก่อนกดเพิ่ม!"); } 
+    else {
+        let li = document.createElement("li"); li.innerHTML = noteInputBox.value;
+        noteListContainer.appendChild(li);
+        let span = document.createElement("span"); span.innerHTML = "\u00d7"; span.className = "close note-close"; 
+        li.appendChild(span);
+    }
+    noteInputBox.value = ""; saveNotes(); 
+}
 
-function saveData() {
+noteListContainer.addEventListener("click", function(e) {
+    if (e.target.tagName === "SPAN") { e.target.parentElement.remove(); saveNotes(); }
+}, false);
+
+function saveData() { if (currentUser) localStorage.setItem("todo_data_" + currentUser, listContainer.innerHTML); }
+function saveNotes() { if (currentUser) localStorage.setItem("notes_data_" + currentUser, noteListContainer.innerHTML); }
+
+function loadData() { 
     if (currentUser) {
-        // บันทึกข้อมูลลง LocalStorage โดยใช้ชื่อไฟล์แปะตามชื่อ user
-        // เช่น data_admin, data_mario
-        localStorage.setItem("data_" + currentUser, listContainer.innerHTML);
+        const foundUser = usersDB.find(u => u.username === currentUser);
+        const displayName = foundUser ? foundUser.displayName : currentUser;
+        document.getElementById('welcome-message').textContent = `ยินดีต้อนรับคุณ ${displayName}`;
+        const todoData = localStorage.getItem("todo_data_" + currentUser);
+        listContainer.innerHTML = todoData ? todoData : "";
+        const noteData = localStorage.getItem("notes_data_" + currentUser);
+        noteListContainer.innerHTML = noteData ? noteData : "";
+        renderFeedbackButton();
     }
 }
 
-function loadData() {
-    if (currentUser) {
-        // ดึงข้อมูลตามชื่อคนล็อกอิน
-        const data = localStorage.getItem("data_" + currentUser);
-        
-        if (data) {
-            // ถ้ามีของเก่า เอามาแสดง
-            listContainer.innerHTML = data;
-        } else {
-            // ถ้าไม่มี (เพิ่งสมัครใหม่) เคลียร์ให้ว่าง
-            listContainer.innerHTML = "";
-        }
+function isAdmin() {
+    const foundUser = usersDB.find(u => u.username === currentUser);
+    return foundUser && foundUser.isAdmin === true;
+}
+function getFeedbackCount() {
+    const feedbacks = JSON.parse(localStorage.getItem('feedback_messages')) || [];
+    return feedbacks.filter(f => f.read === false).length;
+}
+function renderFeedbackButton() {
+    feedbackBtnContainer.innerHTML = ''; 
+    const unreadCount = getFeedbackCount();
+    if (isAdmin()) { 
+        const adminBtnHtml = `<button id="view-feedback-btn" onclick="openAdminHistoryModal()">ดู Feedback <span id="feedback-count-badge">${unreadCount}</span></button>`;
+        feedbackBtnContainer.innerHTML = adminBtnHtml;
+        if (unreadCount === 0) document.getElementById('feedback-count-badge').style.display = 'none';
+    } else {
+        const userBtnHtml = `<button id="feedback-btn" onclick="openUserFeedbackModal()">ส่ง Feedback</button>`;
+        feedbackBtnContainer.innerHTML = userBtnHtml;
     }
 }
 
-// ==========================================
-// ส่วนที่ 5: ลูกเล่นเพิ่มเติม (กด Enter)
-// ==========================================
+function openUserFeedbackModal() { feedbackModal.style.display = "block"; userFeedbackForm.style.display = "block"; adminFeedbackHistory.style.display = "none"; feedbackText.value = ""; }
+function openAdminHistoryModal() { feedbackModal.style.display = "block"; userFeedbackForm.style.display = "none"; adminFeedbackHistory.style.display = "block"; displayFeedbackHistory(); }
+function closeFeedbackModal() { feedbackModal.style.display = "none"; }
 
-// กด Enter ที่ช่องรหัสผ่าน เพื่อ Login
-passwordInput.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") checkLogin();
-});
+function submitFeedback() {
+    const feedbackMsg = feedbackText.value.trim();
+    if (feedbackMsg === '') { alert("กรุณาพิมพ์ข้อเสนอแนะก่อนส่ง!"); return; }
+    let allFeedback = JSON.parse(localStorage.getItem('feedback_messages')) || [];
+    const newFeedback = { user: currentUser, timestamp: new Date().toLocaleString('th-TH'), message: feedbackMsg, read: false };
+    allFeedback.push(newFeedback);
+    localStorage.setItem('feedback_messages', JSON.stringify(allFeedback));
+    alert("ส่งข้อเสนอแนะสำเร็จ!"); closeFeedbackModal();
+}
 
-// กด Enter ที่ช่องพิมพ์งาน เพื่อ Add Task
-inputBox.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") addTask();
-});
+function checkForAdminNotifications() {
+    if (isAdmin()) { 
+        const unreadCount = getFeedbackCount();
+        if (unreadCount > 0) alert(`คุณมี Feedback ใหม่ที่ยังไม่ได้อ่าน ${unreadCount} ข้อความ!`);
+    }
+}
+
+function displayFeedbackHistory() {
+    let allFeedback = JSON.parse(localStorage.getItem('feedback_messages')) || [];
+    let historyHtml = ''; let updatedFeedback = [];
+    allFeedback.slice().reverse().forEach(f => {
+        let statusClass = f.read ? 'read' : 'unread'; let statusText = f.read ? 'อ่านแล้ว' : 'ใหม่';
+        historyHtml += `<div class="feedback-item ${statusClass}"><span class="feedback-status-badge">${statusText}</span><p><strong>จาก:</strong> ${f.user} (${f.timestamp})</p><p class="feedback-message">${f.message}</p></div>`;
+        f.read = true; updatedFeedback.push(f);
+    });
+    feedbackList.innerHTML = historyHtml === '' ? '<p style="text-align: center; color: #9ca3af;">ไม่มี Feedback ในระบบ</p>' : historyHtml;
+    localStorage.setItem('feedback_messages', JSON.stringify(updatedFeedback.reverse())); 
+    renderFeedbackButton(); 
+}
+
+passwordInput.addEventListener("keypress", function(event) { if (event.key === "Enter") checkLogin(); });
+inputBox.addEventListener("keypress", function(event) { if (event.key === "Enter") addTask(); });
+noteInputBox.addEventListener("keypress", function(event) { if (event.key === "Enter") addNote(); });

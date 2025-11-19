@@ -2,238 +2,230 @@
    1. การตั้งค่าพื้นฐาน & ฟอนต์
    ========================================= */
 :root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* สีม่วง-คราม ทันสมัย */
-    --bg-color: #f3f4f6; /* สีพื้นหลังเทาอ่อนสบายตา */
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --bg-color: #f3f4f6;
     --card-bg: #ffffff;
     --text-main: #1f2937;
     --text-muted: #9ca3af;
     --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Prompt', sans-serif; /* ใช้ฟอนต์ Prompt ทั้งเว็บ */
-}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
 
 body {
     background: var(--bg-color);
-    /* เพิ่มลูกเล่นพื้นหลังจางๆ */
     background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
     background-size: 20px 20px;
-    
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    color: var(--text-main);
+    display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-main);
 }
 
 /* =========================================
-   2. กล่อง Container (Card UI)
+   2. กล่อง Layout ต่างๆ
    ========================================= */
 .container {
-    background: var(--card-bg);
-    width: 100%;
-    max-width: 420px; /* กว้างขึ้นนิดหน่อยให้ดูโปร่ง */
-    padding: 40px;
-    border-radius: 24px; /* มุมโค้งมนสมัยใหม่ */
-    box-shadow: var(--shadow);
-    transition: transform 0.3s ease;
+    background: var(--card-bg); width: 100%; max-width: 420px; padding: 40px;
+    border-radius: 24px; box-shadow: var(--shadow); transition: transform 0.3s ease;
 }
 
-/* ชื่อหัวข้อ */
-h2 {
-    color: #111827;
-    margin-bottom: 60px;
-    text-align: center;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-    font-size: 1.8rem;
+.main-workspace {
+    background: transparent; width: 100%; max-width: 900px; 
+    padding: 40px; border-radius: 24px; transition: transform 0.3s ease;
+}
+
+.grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+
+.todo-panel, .notes-panel {
+    padding: 30px; border-radius: 18px; box-shadow: var(--shadow);
+    background: var(--card-bg); border: 1px solid #e5e7eb;
+}
+
+h2 { color: #111827; margin-bottom: 40px; text-align: center; font-weight: 600; font-size: 1.8rem; }
+#welcome-message { font-size: 1.2rem; color: #4b5563; margin-bottom: 10px; }
+.main-workspace h2 { font-size: 1.5rem; }
+
+/* =========================================
+   3. จัดระเบียบช่องกรอก To-Do (Input Wrapper)
+   ========================================= */
+.input-wrapper {
+    display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;
+}
+
+.input-row {
+    display: flex; gap: 10px; align-items: stretch;
+}
+
+/* ช่องพิมพ์ข้อความ */
+#input-box {
+    flex: 1; padding: 14px 18px; border: 2px solid #e5e7eb; border-radius: 14px;
+    background: #f9fafb; font-size: 1rem; outline: none; transition: all 0.3s ease; color: #374151;
+}
+#input-box:focus { border-color: #667eea; background: #fff; }
+
+/* กล่องวันที่พร้อมไอคอน */
+.date-container {
+    display: flex; align-items: center; gap: 8px;
+    background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 14px;
+    padding: 0 12px; transition: all 0.3s ease;
+}
+.date-container:focus-within {
+    border-color: #667eea; background: #fff; box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+/* Input วันที่ (ซ่อนขอบเดิม) */
+#date-box {
+    border: none !important; background: transparent !important; padding: 12px 0 !important;
+    box-shadow: none !important; outline: none; font-family: 'Prompt', sans-serif;
+    color: #374151; cursor: pointer; max-width: 40px;
+}
+
+/* ปุ่มเพิ่ม (ชิดขวา) */
+.action-row { display: flex; justify-content: flex-end; }
+.action-row button {
+    padding: 12px 30px; width: auto; font-size: 1rem; margin: 0;
 }
 
 /* =========================================
-   3. Input & Button (Modern Inputs)
+   4. Input ทั่วไป (Login / Notes)
    ========================================= */
-.input-group {
-    display: flex;
-    gap: 10px; /* เว้นระยะห่างระหว่างช่องพิมพ์กับปุ่ม */
-    margin-bottom: 25px;
+.input-group { display: flex; gap: 10px; margin-bottom: 30px; }
+#note-input-box, #username, #password {
+    flex: 1; padding: 14px 18px; border: 2px solid #e5e7eb; border-radius: 14px;
+    background: #f9fafb; font-size: 1rem; outline: none; transition: all 0.3s ease; color: #374151;
 }
+#note-input-box:focus, #username:focus, #password:focus { border-color: #667eea; background: #fff; }
 
-/* ช่องกรอกข้อความ */
-input {
-    flex: 1;
-    padding: 14px 18px;
-    border: 2px solid #e5e7eb;
-    border-radius: 14px;
-    background: #f9fafb;
-    font-size: 1rem;
-    outline: none;
-    transition: all 0.3s ease;
-    color: #374151;
-}
-
-input:focus {
-    border-color: #667eea; /* เปลี่ยนสีขอบเมื่อคลิก */
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-}
-
-input::placeholder {
-    color: #9ca3af;
-}
-
-/* ปุ่มกด */
 button {
-    padding: 14px 24px;
-    background: var(--primary-gradient);
-    color: white;
-    border: none;
-    border-radius: 14px;
-    cursor: pointer;
-    font-weight: 500;
-    font-size: 1rem;
-    transition: all 0.2s ease;
+    padding: 14px 24px; background: var(--primary-gradient); color: white; border: none;
+    border-radius: 14px; cursor: pointer; font-weight: 500; font-size: 1rem; transition: all 0.2s ease;
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
-
-button:hover {
-    transform: translateY(-2px); /* ลอยขึ้นเล็กน้อย */
-    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
-    filter: brightness(1.1);
-}
-
-button:active {
-    transform: translateY(0);
-}
+button:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4); filter: brightness(1.1); }
 
 /* =========================================
-   4. รายการ To-Do List
+   5. List Styles
    ========================================= */
-ul {
-    list-style: none;
-}
+ul { list-style: none; }
 
 ul li {
-    font-size: 16px;
-    padding: 16px 20px;
-    background: #fff;
-    border: 1px solid #f3f4f6;
-    margin-bottom: 12px;
-    border-radius: 16px; /* มุมโค้งมน */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-    overflow: hidden;
+    font-size: 16px; padding: 16px 20px; background: var(--card-bg); border: 1px solid #e5e7eb;
+    margin-bottom: 12px; border-radius: 16px; cursor: pointer; transition: all 0.2s ease;
+    position: relative; overflow: hidden; word-wrap: break-word; overflow-wrap: break-word;
+    display: flex; align-items: center; flex-wrap: wrap; gap: 10px; justify-content: flex-start;
 }
 
-ul li:hover {
-    transform: translateX(5px); /* ขยับขวาเล็กน้อยเมื่อเอาเมาส์ชี้ */
-    border-color: #e5e7eb;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+ul li:hover { transform: translateX(5px); border-color: #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+
+/* ป้ายวันที่ */
+.task-date {
+    font-size: 0.75rem; color: #6b7280; background: #f3f4f6; padding: 4px 8px;
+    border-radius: 6px; margin-left: auto; margin-right: 10px; white-space: nowrap;
+    display: flex; align-items: center; gap: 5px; border: 1px solid #e5e7eb;
 }
 
-/* วงกลมหน้าข้อความ (เหมือน Checkbox) */
-ul li::before {
-    content: '';
-    width: 20px;
-    height: 20px;
-    border: 2px solid #d1d5db;
-    border-radius: 50%;
-    margin-right: 15px;
-    transition: all 0.2s;
+/* Checkbox & Close Button */
+ul:not(.notes-list) li::before {
+    content: ''; width: 20px; height: 20px; border: 2px solid #d1d5db; border-radius: 50%; margin-right: 5px; flex-shrink: 0;
 }
-
-/* สไตล์เมื่อทำงานเสร็จแล้ว (Checked) */
-ul li.checked {
-    color: var(--text-muted);
-    text-decoration: line-through;
-    background: #f9fafb;
-    border-color: transparent;
-}
-
+ul li.checked { color: var(--text-muted); text-decoration: line-through; background: #f9fafb; border-color: transparent; }
 ul li.checked::before {
-    background: #10b981; /* สีเขียว */
-    border-color: #10b981;
+    background: #10b981; border-color: #10b981;
     background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="12" viewBox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>');
-    background-repeat: no-repeat;
-    background-position: center;
+    background-repeat: no-repeat; background-position: center;
 }
-
-/* ปุ่มลบ (กากบาท) */
 span.close {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    color: #ef4444;
-    opacity: 0; /* ซ่อนก่อน */
-    transition: all 0.2s;
+    width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #ef4444; opacity: 0; transition: all 0.2s; margin-left: auto;
 }
+ul li:hover span.close { opacity: 1; }
+span.close:hover { background: #fee2e2; color: white; }
 
-ul li:hover span.close {
-    opacity: 1; /* โชว์เมื่อเอาเมาส์ชี้ */
-    background: #fee2e2;
-}
-
-span.close:hover {
-    background: #ef4444;
-    color: white;
-}
+/* Login Page Specifics */
+#login-page .input-group { flex-direction: column; gap: 15px; }
+#login-page button { width: 100%; margin-top: 10px; }
 
 /* =========================================
-   5. หน้า Login เฉพาะส่วน
+   6. ปุ่ม Logout (กากบาทสีแดง - ตัวอักษร)
    ========================================= */
-#login-page .input-group {
-    flex-direction: column; /* เรียงแนวตั้ง */
-    gap: 15px;
-}
-
-#login-page button {
-    width: 100%;
-    margin-top: 10px;
-}
-
-/* 1. ต้องสั่งให้กล่องหลักเป็นจุดอ้างอิง */
-.container {
-    position: relative; /* สำคัญมาก! ถ้าไม่มีบรรทัดนี้ ปุ่มจะลอยไปนอกจอ */
-}
-
-/* 2. สไตล์ปุ่ม Logout แบบไอคอน Minimal */
 .btn-logout {
-    position: absolute; /* สั่งให้ลอยอิสระ */
-    top: 20px;         /* ห่างจากขอบบน 20px */
-    right: 20px;       /* ห่างจากขอบขวา 20px */
-    
-    width: 40px !important;   /* บังคับขนาดให้เป็นจัตุรัส */
+    position: fixed; 
+    top: 30px; 
+    right: 30px; 
+    width: 40px !important; 
     height: 40px !important;
-    padding: 0 !important;    /* ไม่เอา padding */
-    margin: 0 !important;
     
-    background: transparent !important; /* พื้นหลังใส */
-    border: none !important;            /* ไม่มีขอบ */
-    box-shadow: none !important;        /* ไม่มีเงา */
-    color: #9ca3af !important;          /* สีไอคอนเทาๆ (ไม่เด่นแย่งซีน) */
-    border-radius: 50% !important;      /* ทำเป็นวงกลม */
-    
+    /* ใช้ Flexbox จัดตัว X ให้อยู่กลางเป๊ะๆ */
     display: flex;
     align-items: center;
     justify-content: center;
+    
+    /* ปรับขนาดตัว X */
+    font-size: 20px !important; 
+    font-weight: bold !important;
+    line-height: 1 !important;
+    
+    /* ดีไซน์สีแดง */
+    background: #fff !important; 
+    border: 2px solid #ef4444 !important; 
+    color: #ef4444 !important;            
+    
+    border-radius: 12px !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important;
+    
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.2s ease;
 }
 
-/* เอฟเฟกต์ตอนเอาเมาส์ชี้ */
 .btn-logout:hover {
-    background: #fee2e2 !important; /* พื้นหลังแดงจางๆ */
-    color: #ef4444 !important;      /* ไอคอนเปลี่ยนเป็นสีแดง */
-    transform: scale(1.1) !important; /* ขยายใหญ่นิดนึง */
+    background: #ef4444 !important; 
+    color: white !important; 
+    transform: scale(1.1) !important;
+    box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4) !important;
 }
 
+/* Feedback UI */
+#feedback-btn-container { position: fixed; bottom: 30px; left: 30px; z-index: 1000; }
+#feedback-btn { padding: 10px 15px; border-radius: 10px; background: #10b981; color: white; font-weight: 500; border: none; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); cursor: pointer; transition: 0.2s; }
+#feedback-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5); }
+#view-feedback-btn { position: relative; padding: 10px 25px; border-radius: 10px; background: #f59e0b; color: white; font-weight: 500; border: none; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); cursor: pointer; transition: 0.2s; }
+#view-feedback-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(245, 158, 11, 0.5); }
+#feedback-count-badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; z-index: 10; border: 2px solid white; }
+
+/* Modal */
+.modal-feedback { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
+.modal-content { background-color: var(--card-bg); margin: 10% auto; padding: 25px; border-radius: 18px; width: 80%; max-width: 400px; box-shadow: var(--shadow); position: relative; animation: fadeIn 0.3s; }
+.close-modal { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+.close-modal:hover { color: #333; }
+.modal-content h3 { text-align: center; margin-bottom: 20px; font-size: 1.3rem; }
+#feedback-text { width: 100%; min-height: 150px; padding: 15px; margin-bottom: 15px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; resize: vertical; font-family: 'Prompt', sans-serif; }
+
+/* History List */
+#feedback-list { max-height: 400px; overflow-y: auto; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px; }
+.feedback-item { background: #f9fafb; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 5px solid; position: relative; }
+.feedback-item.read { border-left-color: #d1d5db; background: #ffffff; }
+.feedback-item.unread { border-left-color: #f59e0b; background: #fffefb; }
+.feedback-status-badge { position: absolute; top: 5px; right: 15px; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 5px; color: white; }
+.feedback-item.read .feedback-status-badge { background: #9ca3af; }
+.feedback-item.unread .feedback-status-badge { background: #f59e0b; }
+.feedback-message { margin-top: 5px; font-style: italic; color: #4b5563; border-top: 1px dashed #e5e7eb; padding-top: 8px; margin-top: 8px; }
+
+@keyframes fadeIn { from {opacity: 0; transform: translateY(-20px);} to {opacity: 1; transform: translateY(0);} }
+
+@media (max-width: 880px) {
+    .grid-layout { grid-template-columns: 1fr; gap: 30px; }
+    .main-workspace { max-width: 95%; padding: 30px 20px; }
+    
+    .btn-logout { 
+        top: 15px; 
+        right: 15px; 
+        /* ในมือถือ พื้นหลังโปร่งแสงนิดหน่อย */
+        background: rgba(255, 255, 255, 0.9) !important; 
+    }
+    
+    #feedback-btn-container { display: none; }
+    
+    /* จัดการ Input บนมือถือ */
+    .input-row { flex-direction: column; }
+    .date-container, #date-box { width: 100%; max-width: none; }
+    .action-row button { width: 100%; }
 }
