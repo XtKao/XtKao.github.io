@@ -1,11 +1,10 @@
 let currentUser = null; 
-
 const loginPage = document.getElementById("login-page");
 const todoPage = document.getElementById("todo-page");
+const logoutBtn = document.getElementById("logout-btn");
 const usernameInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");
 const inputBox = document.getElementById("input-box");
-// [ใหม่] รับค่าจากช่องวันที่
 const dateBox = document.getElementById("date-box");
 const listContainer = document.getElementById("list-container");
 const noteInputBox = document.getElementById("note-input-box");
@@ -20,12 +19,19 @@ const feedbackList = document.getElementById("feedback-list");
 function checkLogin() {
     const userIn = usernameInput.value;
     const passIn = passwordInput.value;
-    if (typeof usersDB === 'undefined') { alert("ไม่พบฐานข้อมูลผู้ใช้!"); return; }
+    
+    if (typeof usersDB === 'undefined') { alert("ไม่พบฐานข้อมูลผู้ใช้! ตรวจสอบไฟล์ users.js"); return; }
+    
     const foundUser = usersDB.find(u => u.username === userIn && u.password === passIn);
     if (foundUser) {
         currentUser = foundUser.username;
         alert("ยินดีต้อนรับคุณ " + foundUser.displayName + " !"); 
-        loginPage.style.display = "none"; todoPage.style.display = "flex"; 
+        loginPage.style.display = "none"; 
+        
+        // [แก้บัค] ใช้ block เพื่อให้ margin auto ใน CSS ทำงานได้ (จัดกลาง)
+        todoPage.style.display = "block"; 
+        logoutBtn.style.display = "flex"; 
+        
         loadData(); checkForAdminNotifications(); 
     } else { alert("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!"); }
 }
@@ -33,41 +39,29 @@ function checkLogin() {
 function logout() {
     currentUser = null;
     listContainer.innerHTML = ""; noteListContainer.innerHTML = ""; feedbackBtnContainer.innerHTML = "";
-    todoPage.style.display = "none"; loginPage.style.display = "block";
+    todoPage.style.display = "none"; 
+    logoutBtn.style.display = "none";
+    loginPage.style.display = "block";
     usernameInput.value = ""; passwordInput.value = "";
 }
 
 function addTask() {
-    if (inputBox.value === '') {
-        alert("กรุณาพิมพ์ข้อความก่อนกดเพิ่ม!");
-    } else {
+    if (inputBox.value === '') { alert("กรุณาพิมพ์ข้อความก่อนกดเพิ่ม!"); } else {
         let li = document.createElement("li");
-        // ใส่ข้อความ
         let textNode = document.createTextNode(inputBox.value);
         li.appendChild(textNode);
-
-        // [ใหม่] ใส่ป้ายวันที่ (ถ้ามีการเลือก)
         if (dateBox.value) {
             let dateObj = new Date(dateBox.value);
             let options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            let formattedDate = dateObj.toLocaleDateString('th-TH', options);
-
             let dateSpan = document.createElement("span");
             dateSpan.className = "task-date";
-            dateSpan.innerHTML = `🕒 ${formattedDate}`;
+            dateSpan.innerHTML = `🕒 ${dateObj.toLocaleDateString('th-TH', options)}`;
             li.appendChild(dateSpan);
         }
-        
         listContainer.appendChild(li);
-        
-        let span = document.createElement("span");
-        span.innerHTML = "\u00d7";
-        span.className = "close";
-        li.appendChild(span);
+        let span = document.createElement("span"); span.innerHTML = "\u00d7"; span.className = "close"; li.appendChild(span);
     }
-    inputBox.value = "";
-    dateBox.value = ""; // เคลียร์วันที่
-    saveData(); 
+    inputBox.value = ""; dateBox.value = ""; saveData(); 
 }
 
 listContainer.addEventListener("click", function(e) {
@@ -76,12 +70,10 @@ listContainer.addEventListener("click", function(e) {
 }, false);
 
 function addNote() {
-    if (noteInputBox.value === '') { alert("กรุณาพิมพ์โน้ตก่อนกดเพิ่ม!"); } 
-    else {
+    if (noteInputBox.value === '') { alert("กรุณาพิมพ์โน้ตก่อนกดเพิ่ม!"); } else {
         let li = document.createElement("li"); li.innerHTML = noteInputBox.value;
         noteListContainer.appendChild(li);
-        let span = document.createElement("span"); span.innerHTML = "\u00d7"; span.className = "close note-close"; 
-        li.appendChild(span);
+        let span = document.createElement("span"); span.innerHTML = "\u00d7"; span.className = "close note-close"; li.appendChild(span);
     }
     noteInputBox.value = ""; saveNotes(); 
 }
@@ -106,14 +98,9 @@ function loadData() {
     }
 }
 
-function isAdmin() {
-    const foundUser = usersDB.find(u => u.username === currentUser);
-    return foundUser && foundUser.isAdmin === true;
-}
-function getFeedbackCount() {
-    const feedbacks = JSON.parse(localStorage.getItem('feedback_messages')) || [];
-    return feedbacks.filter(f => f.read === false).length;
-}
+function isAdmin() { const foundUser = usersDB.find(u => u.username === currentUser); return foundUser && foundUser.isAdmin === true; }
+function getFeedbackCount() { const feedbacks = JSON.parse(localStorage.getItem('feedback_messages')) || []; return feedbacks.filter(f => f.read === false).length; }
+
 function renderFeedbackButton() {
     feedbackBtnContainer.innerHTML = ''; 
     const unreadCount = getFeedbackCount();
