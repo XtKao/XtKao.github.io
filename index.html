@@ -72,11 +72,13 @@
     <div id="feedback-modal" class="modal-feedback">
         <div class="modal-content">
             <span class="close-modal" onclick="closeFeedbackModal()">&times;</span>
+            
             <div id="user-feedback-form">
                 <h3>ส่งข้อเสนอแนะ 💌</h3>
                 <textarea id="feedback-text" placeholder="พิมพ์ข้อเสนอแนะ..."></textarea>
                 <button onclick="submitFeedback()">ส่ง Feedback</button>
             </div>
+            
             <div id="admin-feedback-history" style="display: none;">
                 <h3>ประวัติ Feedback 📜</h3>
                 <div id="feedback-list"></div>
@@ -85,18 +87,23 @@
         </div>
     </div>
 
+    <div id="save-status" style="position: fixed; bottom: 10px; right: 10px; font-size: 12px; opacity: 0; transition: opacity 0.5s; color: gray; pointer-events: none; z-index: 999;">
+        กำลังบันทึก... ☁️
+    </div>
+
     <div class="footer-credit">
         © Vibe Coding | Tanakorn Jennadtee<br>
       Gemini 3 Pro
     </div>
 
-    <script src="users.js"></script>
+    <script src="users.js" defer></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        // [Optimization]: เพิ่ม query, where, orderBy เข้ามาเพื่อใช้ในการดึงข้อมูลแบบเร็วขึ้น
+        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, updateDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Config ของคุณที่ให้มา
+        // Config ของคุณ
         const firebaseConfig = {
             apiKey: "AIzaSyAKNE4kBEb_EMKnVuqz92at8sPimRmGwS0",
             authDomain: "todoschoolproject.firebaseapp.com",
@@ -113,11 +120,12 @@
 
         // ส่งตัวแปรออกไปให้ script.js ใช้
         window.db = db;
-        window.fbase = { collection, addDoc, getDocs, doc, setDoc, getDoc, updateDoc };
+        // [Optimization]: ส่งฟังก์ชัน query ใหม่ๆ ออกไปด้วย
+        window.fbase = { collection, addDoc, getDocs, doc, setDoc, getDoc, updateDoc, query, where, orderBy };
         
         console.log("Firebase Initialized!");
 
-        // เรียกไฟล์ script.js หลัก (ต้องเป็น module เพื่อรอ Firebase โหลดก่อน)
+        // เรียกไฟล์ script.js หลัก
         import "./script.js";
     </script>
     
